@@ -1,37 +1,36 @@
-#include<stdio.h>
+#include <iostream>
+#include <string>
+using namespace std;
 
-int a[100][100], b[100][100], c[100][100];
+std::string parse_10digit_number(std::string number) {
+    return number.substr(0, 4) + " " + number.substr(4, 3) + " " + number.substr(7, 3);
+}
 
-int i, j, k, m, n, p;
 
-int main()
-{
-    scanf("%d%d%d", &n, &m, &p);
-
-    for (i = 0; i < n; ++i) {
-        for (j = 0; j < m; ++j) {
-            scanf("%d", &a[i][j]);
-        }
+std::string parse_phone_number(std::string number) {
+    //cout<<number.size()<<endl;
+    switch(number.size()) {
+        case 10:
+            return "(004) " + parse_10digit_number(number);
+        case 12:
+            return "(004) " + parse_10digit_number(number.substr(2, number.size() - 2));
+        case 13:
+            return "(004) " + parse_10digit_number(number.substr(2, number.size() - 3));
+        default:
+            return "";
     }
+}
 
-    for (i = 0; i < m; ++i) {
-        for(j = 0; j < p; ++j) {
-            scanf("%d", &b[i][j]);
-        }
-    }
 
-    for (i = 0; i < n; i++) {
-        for (j = 0; j < p; j++) {
-            for (k = 0; k < m; k++) {
-                c[i][j] += a[i][k] * b[k][j];
-            }
-        }
-    }
+int main() {
+    int size;
+    std::string phone_number;
+    cin>>size;
+    //cin.get();
 
-    for (i = 0; i < n; ++i) {
-        for (j = 0; j < p; ++j) {
-            printf("%d\t", c[i][j]);
-        }
-        printf("\n");
+    for (int i = 0; i < size; i++) {
+        //getline(cin, phone_number);
+        std::cin >> phone_number;
+        std::cout << parse_phone_number(phone_number) << std::endl;
     }
 }
