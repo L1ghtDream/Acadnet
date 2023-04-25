@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
-project(deps)
+project(Acadnet)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(deps unittest.c hashtable.c)
+add_executable(deps hashtable.c)

@@ -1,201 +1,118 @@
-// Simple hash table implemented in C.
+#include <stdio.h>
+#include <math.h>
 
-#include "hashtable.h"
-
-#include <assert.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdlib.h>
-
-// Hash table entry (slot may be filled or empty).
-typedef struct {
-    const char* key;  // key is NULL if this slot is empty
-    void* value;
-} ht_entry;
-
-// Hash table structure: create with ht_create, free with ht_destroy.
-struct ht {
-    ht_entry* entries;  // hash slots
-    size_t capacity;    // size of _entries array
-    size_t length;      // number of items in hash table
-};
-
-#define INITIAL_CAPACITY 16  // must not be zero
-
-ht* ht_create(void) {
-    // Allocate space for hash table struct.
-    ht* table = malloc(sizeof(ht));
-    if (table == NULL) {
-        return NULL;
-    }
-    table->length = 0;
-    table->capacity = INITIAL_CAPACITY;
-
-    // Allocate (zero'd) space for entry buckets.
-    table->entries = calloc(table->capacity, sizeof(ht_entry));
-    if (table->entries == NULL) {
-        free(table);
-        return NULL;
-    }
-    return table;
+unsigned int get_leftmost_nbits(unsigned int packet, unsigned int n)
+{
+    return packet >> 31 - n + 1;
 }
 
-void ht_destroy(ht* table) {
-    // First free allocated keys.
-    for (size_t i = 0; i < table->capacity; i++) {
-        if (table->entries[i].key != NULL) {
-            free((void*)table->entries[i].key);
-        }
-    }
-
-    // Then free entries array and table itself.
-    free(table->entries);
-    free(table);
+unsigned int parse_n_of_bits(unsigned int* packet, int n_of_bits)
+{
+    unsigned int ret = get_leftmost_nbits(*packet, n_of_bits);
+    *packet <<= n_of_bits;
+    return ret;
 }
 
-#define FNV_OFFSET 14695981039346656037UL
-#define FNV_PRIME 1099511628211UL
-
-// Return 64-bit FNV-1a hash for key (NUL-terminated). See description:
-// https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-static uint64_t hash_key(const char* key) {
-    uint64_t hash = FNV_OFFSET;
-    for (const char* p = key; *p; p++) {
-        hash ^= (uint64_t)(unsigned char)(*p);
-        hash *= FNV_PRIME;
+char get_op(unsigned int op)
+{
+    switch(op)
+    {
+        case 0: return '+';
+        case 1: return '-';
+        case 2: return '*';
+        default: return '/';
     }
-    return hash;
 }
 
-void* ht_get(ht* table, const char* key) {
-    // AND hash with capacity-1 to ensure it's within entries array.
-    uint64_t hash = hash_key(key);
-    size_t index = (size_t)(hash & (uint64_t)(table->capacity - 1));
+void input_data_to_operands(unsigned short* input_data, unsigned int len, unsigned int* operands, int dim, unsigned int n_ops)
+{
+    unsigned int element;
+    for(int i = 0; i < len; i++)
+    {
+        element = input_data[i] << 16;
 
-    // Loop till we find an empty entry.
-    while (table->entries[index].key != NULL) {
-        if (strcmp(key, table->entries[index].key) == 0) {
-            // Found key, return value.
-            return table->entries[index].value;
+		int operands_in_input = sizeof(input_data[0]) * 8 / dim;
+        for(int j = 0; j < operands_in_input && (j + i * operands_in_input) < n_ops ; j++)
+        {
+            //printf("HERE\n");
+            operands[operands_in_input * i + j] = parse_n_of_bits(&element, dim);
         }
-        // Key wasn't in this slot, move to next (linear probing).
-        index++;
-        if (index >= table->capacity) {
-            // At end of entries array, wrap around.
-            index = 0;
-        }
+
     }
-    return NULL;
 }
 
-// Internal function to set an entry (without expanding table).
-static const char* ht_set_entry(ht_entry* entries, size_t capacity,
-                                const char* key, void* value, size_t* plength) {
-    // AND hash with capacity-1 to ensure it's within entries array.
-    uint64_t hash = hash_key(key);
-    size_t index = (size_t)(hash & (uint64_t)(capacity - 1));
-
-    // Loop till we find an empty entry.
-    while (entries[index].key != NULL) {
-        if (strcmp(key, entries[index].key) == 0) {
-            // Found key (it already exists), update value.
-            entries[index].value = value;
-            return entries[index].key;
-        }
-        // Key wasn't in this slot, move to next (linear probing).
-        index++;
-        if (index >= capacity) {
-            // At end of entries array, wrap around.
-            index = 0;
-        }
+int compute_result(unsigned int* op, unsigned int* operands, unsigned int dim)
+{
+    int result = operands[0];
+    for(int i = 0; i < dim; i++)
+    {
+        //printf("result = %d\n", result);
+        if (op[i] == 0)
+            result += operands[i + 1];
+        else if (op[i] == 1)
+            result -= operands[i + 1];
+        else if (op[i] == 2)
+            result *= operands[i + 1];
+        else if (op[i] == 3)
+            result /= operands[i + 1];
     }
-
-    // Didn't find key, allocate+copy if needed, then insert it.
-    if (plength != NULL) {
-        key = strdup(key);
-        if (key == NULL) {
-            return NULL;
-        }
-        (*plength)++;
-    }
-    entries[index].key = (char*)key;
-    entries[index].value = value;
-    return key;
+    return result;
 }
 
-// Expand hash table to twice its current size. Return true on success,
-// false if out of memory.
-static bool ht_expand(ht* table) {
-    // Allocate new entries array.
-    size_t new_capacity = table->capacity * 2;
-    if (new_capacity < table->capacity) {
-        return false;  // overflow (capacity would be too big)
-    }
-    ht_entry* new_entries = calloc(new_capacity, sizeof(ht_entry));
-    if (new_entries == NULL) {
-        return false;
-    }
+int main()
+{
+    unsigned int packet;
+    scanf("%u", &packet);
+    unsigned int n_ops = parse_n_of_bits(&packet, 3);
+    ++n_ops;
+    //printf("n_ops = %i\n", n_ops);
 
-    // Iterate entries, move all non-empty ones to new table's entries.
-    for (size_t i = 0; i < table->capacity; i++) {
-        ht_entry entry = table->entries[i];
-        if (entry.key != NULL) {
-            ht_set_entry(new_entries, new_capacity, entry.key,
-                         entry.value, NULL);
-        }
+    //get instructions
+    unsigned int op[10];
+    for(int i = 0; i < n_ops; i++)
+    {
+        op[i] = parse_n_of_bits(&packet, 2);
     }
+    //printf("op = ");
+    //for(int i = 0; i < n_ops; i++){
+    //    printf("%i ", op[i]);
+    //}
+    //printf("\n");
 
-    // Free old entries array and update this table's details.
-    free(table->entries);
-    table->entries = new_entries;
-    table->capacity = new_capacity;
-    return true;
-}
+    //return 0;
 
-const char* ht_set(ht* table, const char* key, void* value) {
-    assert(value != NULL);
-    if (value == NULL) {
-        return NULL;
-    }
+    //get dim
+    unsigned int dim = parse_n_of_bits(&packet, 4);
+    ++dim;
 
-    // If length will exceed half of current capacity, expand it.
-    if (table->length >= table->capacity / 2) {
-        if (!ht_expand(table)) {
-            return NULL;
-        }
+    //printf("dim = %i\n", dim);
+
+    //get input data
+    int n_of_input_data = ceil(((n_ops + 1) * dim) / 16.0);
+
+    //printf("n_of_input_data = %i\n", n_of_input_data);
+
+    unsigned short input_data[10];
+    for(int i = 0; i < n_of_input_data; i++)
+    {
+        scanf("%hu", &input_data[i]);
     }
 
-    // Set entry and update length.
-    return ht_set_entry(table->entries, table->capacity, key, value,
-                        &table->length);
-}
+    //printf("input_data = ");
+    //for(int i = 0; i < n_of_input_data; i++){
+    //    printf("%i ", input_data[i]);
+    //}
+    //printf("\n");
 
-size_t ht_length(ht* table) {
-    return table->length;
-}
+    unsigned int operands[10];
+    input_data_to_operands(input_data, n_of_input_data, operands, dim, n_ops+1);
 
-hti ht_iterator(ht* table) {
-    hti it;
-    it._table = table;
-    it._index = 0;
-    return it;
-}
+    //printf("operands = ");
+    //for(int i = 0; i < 10; i++){
+    //    printf("%i ", operands[i]);
+    //}
+    //printf("\n");
 
-bool ht_next(hti* it) {
-    // Loop till we've hit end of entries array.
-    ht* table = it->_table;
-    while (it->_index < table->capacity) {
-        size_t i = it->_index;
-        it->_index++;
-        if (table->entries[i].key != NULL) {
-            // Found next non-empty item, update iterator key and value.
-            ht_entry entry = table->entries[i];
-            it->key = entry.key;
-            it->value = entry.value;
-            return true;
-        }
-    }
 
-    return false;
+    printf("%d\n", compute_result(op, operands, n_ops));
 }
