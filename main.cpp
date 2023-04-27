@@ -1,56 +1,53 @@
 #include <iostream>
-using namespace std;
+#include <vector>
 
-#define check_eq(x, y) ((x) == (y))
+#define POLI_FORBIDDEN_DREAM 6969696969
 
-class A
-{
-public:
-    int x;
-    int y;
+using zacusca_t = std::vector<std::vector<int>>;
+using strangers_t = std::vector<long long>;
 
-    A();
-    virtual ~A();
-};
 
-class B : public A
-{
-public:
-    B();
-    ~B();
-};
+int main() {
+    int n;
+    std::cin >> n;
 
-A::A()
-{
-    x = 42;
-    y = 41;
-    if (!check_eq(x, 24))
-    {
-        std::cout << "A.ctor()\n";
+    zacusca_t zacusca(n + 1, std::vector<int>(n + 1, 0));
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            std::cin >> zacusca[i][j];
+        }
     }
-}
 
-A::~A()
-{
-    std::cout << "~A.dtor()\n";
-}
+    strangers_t strangers(n + 1, 0);
+    for (int i = 1; i <= n; ++i) {
+        std::cin >> strangers[i];
+    }
 
-B::B() : A()
-{
-    std::cout << "B.ctor()\n";
-    // Make sure 42 is the universal answer
-    std::cout << "is 42 the answer to the Ultimate Question of Life, the Universe and Everything? " << (x == 42 ? "yes" : "no") << "\n";
-}
+    std::vector<long long int> dp(n + 1);
+    // Caz de baza
+    dp[0] = 0;
 
-B::~B()
-{
-    std::cout << "~B.dtor()\n";
-}
+    // Caz general
+    for (int i = 1; i <= n; ++i) {
+        // Adaugam interactiunile cu strainii.
+        dp[i] = strangers[i];
 
-int main()
-{
-    A* a = new B();
-    delete a;
+        // Adaugam interactiunile de tip zacusca.
+        for (int j = 1; j < i; ++j) {
+            if (zacusca[j][i]) {
+                dp[i] = (dp[i] + dp[j]) % POLI_FORBIDDEN_DREAM;
+            }
+        }
+    }
+
+    // Solutie: X = sum(dp[i])
+    long long int X = 0;
+    for (int i = 1; i <= n; ++i) {
+        X = (X + dp[i]) % POLI_FORBIDDEN_DREAM;
+    }
+
+    std::cout << X << std::endl;
 
     return 0;
 }
+
