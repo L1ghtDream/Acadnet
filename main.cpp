@@ -1,63 +1,56 @@
-#include <bits/stdc++.h>
+#include <iostream>
+using namespace std;
 
-// Absolut (1L) pattern
-// Hai noroc!
-// Understand how this class is used.
-// Hint: Order a single Absolut.
-class GigelAbsolut {
-private:
-    GigelAbsolut() : m_count(0) {}
+#define check_eq(x, y) ((x) == (y))
+
+class A
+{
 public:
-    ~GigelAbsolut() {}
-    GigelAbsolut(const GigelAbsolut&) = delete;
-    GigelAbsolut(GigelAbsolut&&) = delete;
-    GigelAbsolut& operator=(const GigelAbsolut&) = delete;
-    GigelAbsolut& operator=(GigelAbsolut&&) = delete;
+    int x;
+    int y;
 
-    void update() { ++m_count; }
-    int get_count() { return m_count; }
-
-    static GigelAbsolut& getUniqueGigel();
-
-private:
-    int m_count;
+    A();
+    virtual ~A();
 };
 
-int read_input()
+class B : public A
 {
-    int n;
-    std::cin >> n;
-    return n;
+public:
+    B();
+    ~B();
+};
+
+A::A()
+{
+    x = 42;
+    y = 41;
+    if (!check_eq(x, 24))
+    {
+        std::cout << "A.ctor()\n";
+    }
 }
 
-void write_output(int n)
+A::~A()
 {
-    std::cout << n << "\n";
+    std::cout << "~A.dtor()\n";
+}
+
+B::B() : A()
+{
+    std::cout << "B.ctor()\n";
+    // Make sure 42 is the universal answer
+    std::cout << "is 42 the answer to the Ultimate Question of Life, the Universe and Everything? " << (x == 42 ? "yes" : "no") << "\n";
+}
+
+B::~B()
+{
+    std::cout << "~B.dtor()\n";
 }
 
 int main()
 {
-    // read input
-    int n = read_input();
-
-    for (int i = 0; i < n; ++i) {
-        // I want a GigelAbsolut, give me one
-        GigelAbsolut& gigelAbsolut = GigelAbsolut::getUniqueGigel();
-        // apply an update
-        gigelAbsolut.update();
-    }
-
-    // get the number of updates and save it to a file
-    GigelAbsolut& gigelAbsolut = GigelAbsolut::getUniqueGigel();
-    write_output(gigelAbsolut.get_count());
+    A* a = new B();
+    delete a;
 
     return 0;
-}
-
-// This is a function which always returns the same GigelAbsolut
-// object. Is this the effect of the alcohol? Maybe, who knows...
-GigelAbsolut& GigelAbsolut::getUniqueGigel()
-{
-    static GigelAbsolut g = GigelAbsolut();
-    return g;
 }
