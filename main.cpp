@@ -1,21 +1,29 @@
 #include <iostream>
-#include <iomanip>
+#include <vector>
 
 
-const double PI = 3.14159265;
+std::vector<int> prime_factors(int n);
+
 
 int main() {
-    int n, a, b;
-
-    // this is fine
-    std::cout << std::fixed;
+    int n;
 
     std::cin >> n;
-    for (int i = 0; i < n; i++){
-        std::cin >> a >> b;
-        std::cout << PI * a * b << std::endl;
+    auto factors = prime_factors(n);
+
+    std::cout << n*factors[factors.size()-1] << std::endl;
+}
+
+
+std::vector<int> prime_factors(int n) {
+    std::vector<int> factors;
+
+    for (int i = 2; i <= n; i++) {
+        while (n % i == 0) {
+            factors.push_back(i);
+            n /= i;
+        }
     }
 
-
-    return 0;
+    return factors;
 }
