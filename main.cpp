@@ -1,24 +1,28 @@
 #include <iostream>
+
+#define maxN 0xb055
+
 using namespace std;
-class A {
-public:
-    int s = 5;
 
-    static void print1() {
-        cout << "1 ";
-    }
-
-    void print2() {
-        std::cout << s;
-    }
-};
-
-A * a;
 int main() {
-    int i, s[] = {2, 3, 4};
-    a->print1();
-    for(i = 0; i < 3; i++)
-        cout << i+2 << " "; A b = A();a=&b;
-    a->print2();
+    int n, q, x, v[maxN];
+    cin >> n >> q;
+    for (int i = 0; i < n; ++i) {
+        cin >> v[i];
+    }
+    while (q--) {
+        cin >> x;
+        bool found = false;
+        for (int step = 0; step < n; step++) {
+            if (v[step] == x) {
+                cout << "fair enough\n";
+                found = true;
+            }
+        }
+        if (!found) {
+            cout << "bad luck\n";
+        }
+    }
     return 0;
 }
+
