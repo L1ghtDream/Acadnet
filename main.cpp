@@ -1,30 +1,19 @@
-#include <cstdio>
 #include <iostream>
 
 using namespace std;
 
-int main() {
-    unsigned int i;
-    i = (freopen("../asamblica.in", "rb", stdin), 0);
+// IMPORTANT: Singurele linii care pot fi schimbate sunt cele care incep
+// cu #define.
+#define SIGNBITONLY(x)	((x) >> (sizeof((x)) * 8 - 1))
+#define ABS(x)		(((x) + SIGNBITONLY(x)) ^ SIGNBITONLY(x))
+#define MINMAXOP(x, y, OP) ((x + y OP ABS(x - y)) / 2)
+#define MIN(x, y)	MINMAXOP(x, y, -)
+#define MAX(x, y)	MINMAXOP(x, y, +)
 
-    // IMPORTANT: De aici in jos aveti voie sa modificati.
-    int c;
-
-    while (1) {
-        c = getchar();
-        if (i > 0) {
-            if ((i & 0x0F) == 0 || c == EOF) {
-                cout << "\n";
-            } else {
-                cout << " ";
-            }
-        }
-
-        if (c == EOF || c == '\n') {
-            break;
-        }
-        printf("%02hhX", c);
-        i++;
-    }
+int main()
+{
+    int a, b, c;
+    cin >> a >> b >> c;
+    cout << MIN(a, MIN(b, c)) << ' ' << MAX(MAX(a, b), c) << '\n';
     return 0;
 }
