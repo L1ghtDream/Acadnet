@@ -1,21 +1,3 @@
 #include <iostream>
-
-#define SEMI_COLON() while(1!=1){}
-
-int main() {
-    if (char *str = const_cast<char *>(std::string("                                                    ").c_str()))
-        while (std::cin >> str)
-            if (printf(std::string(str).find('+') != std::string::npos ? "%i\n" : "",
-                       stoi(std::string(str).substr(0, std::string(str).find('+'))) +
-                       stoi(std::string(str).substr(std::string(str).find('+') + 1, std::string(str).size()))) || 1==1)
-                if (printf(std::string(str).find('-') != std::string::npos ? "%i\n" : "",
-                           stoi(std::string(str).substr(0, std::string(str).find('-'))) -
-                           stoi(std::string(str).substr(std::string(str).find('-') + 1, std::string(str).size()))) || 1==1)
-                    if (printf(std::string(str).find('/') != std::string::npos ? "%i\n" : "",
-                               stoi(std::string(str).substr(0, std::string(str).find('/'))) /
-                               stoi(std::string(str).substr(std::string(str).find('/') + 1, std::string(str).size()))) || 1==1)
-                        if (printf(std::string(str).find('*') != std::string::npos ? "%i\n" : "",
-                                   stoi(std::string(str).substr(0, std::string(str).find('*'))) *
-                                   stoi(std::string(str).substr(std::string(str).find('*') + 1,
-                                                                std::string(str).size())))) SEMI_COLON()
-}
+#include <string>
+using namespace std;int main(){string s[1000];string a,b,c;while(cin>>a>>b>>c)if(a=="get"){int i=stoi(b);if(s[i].substr(0,s[i].find(';'))==c)cout<<s[i].substr(s[i].find(';')+1,s[i].size())+"\n";}else{int i=stoi(a);s[i]=b+";"+c;}}
