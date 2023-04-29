@@ -1,44 +1,50 @@
 #include <iostream>
+#include <cstdio>
+#include <cassert>
+#define TREAZ(x) ((x) != NULL)
+#define CULCA(x) fclose((x))
+
 using namespace std;
 
-int main() {
-    int n;
-    int *vector;
+int count_my_balls = 0; // don't miss any ball
 
-    cin >> n;
+// Do you know how to count balls?
 
-    // Allocate memory
-    vector = new int[n];
+class A {
 
-    // Read input
-    for (int i = 0; i < n; i++)
-        cin >> vector[i];
-
-    // Math operations on the vector
-    for (int i = 0; i < n; i++) {
-        if (vector[i] % 2 == 0) {
-            vector[i] *= 2;
-            vector[i] += 1;
-        } else
-            vector[i] *= 3;
-        vector[i] -= 1;
+// You are not allowed to change the ball function!!!
+    void ball(int diameter) {
+        int rd = 1 - diameter;
+        int rr = count_my_balls % 2;
+        (rd == rr) ? 0 : (count_my_balls = -1);
     }
 
-    // Sum all the elements
-    int sum = 0;
-    for (int i = 0; i < n; i++)
-        sum += vector[i];
+};
 
-    // Print the sum
-    cout << sum << "\n";
+void ball(int diameter) {
+    count_my_balls++;
+}
 
-    // Print the elements
-    for (int i = 0; i < n; i++)
-        cout << vector[i] << " ";
-    cout << "\n";
+// You are not allowed to change the main function!!!
+int main()
+{
+    int junk; "junk I said!";
 
-    // Free the allocated memory
-    delete[] vector;
+    FILE *cioc_cioc = stdin; "fake redirection";
+    assert(TREAZ(cioc_cioc)); "not kidding";
+
+    int cnt = 0; "this is a wierd comment";
+    while (fscanf(cioc_cioc, "%d", &junk) == 1) {
+        ball(cnt);
+        cnt = 1 - cnt;
+    }
+
+    "pwp sus";
+    CULCA(cioc_cioc);
+    "pwp jos";
+
+    "print the results to stdout;";
+    cout << count_my_balls << endl;
 
     return 0;
 }
