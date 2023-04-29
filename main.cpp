@@ -1,28 +1,44 @@
 #include <iostream>
-
-#define maxN 0xb055
-
 using namespace std;
 
 int main() {
-    int n, q, x, v[maxN];
-    cin >> n >> q;
-    for (int i = 0; i < n; ++i) {
-        cin >> v[i];
+    int n;
+    int *vector;
+
+    cin >> n;
+
+    // Allocate memory
+    vector = new int[n];
+
+    // Read input
+    for (int i = 0; i < n; i++)
+        cin >> vector[i];
+
+    // Math operations on the vector
+    for (int i = 0; i < n; i++) {
+        if (vector[i] % 2 == 0) {
+            vector[i] *= 2;
+            vector[i] += 1;
+        } else
+            vector[i] *= 3;
+        vector[i] -= 1;
     }
-    while (q--) {
-        cin >> x;
-        bool found = false;
-        for (int step = 0; step < n; step++) {
-            if (v[step] == x) {
-                cout << "fair enough\n";
-                found = true;
-            }
-        }
-        if (!found) {
-            cout << "bad luck\n";
-        }
-    }
+
+    // Sum all the elements
+    int sum = 0;
+    for (int i = 0; i < n; i++)
+        sum += vector[i];
+
+    // Print the sum
+    cout << sum << "\n";
+
+    // Print the elements
+    for (int i = 0; i < n; i++)
+        cout << vector[i] << " ";
+    cout << "\n";
+
+    // Free the allocated memory
+    delete[] vector;
+
     return 0;
 }
-
