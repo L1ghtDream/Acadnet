@@ -1,50 +1,30 @@
-#include <iostream>
 #include <cstdio>
-#include <cassert>
-#define TREAZ(x) ((x) != NULL)
-#define CULCA(x) fclose((x))
+#include <iostream>
 
 using namespace std;
 
-int count_my_balls = 0; // don't miss any ball
+int main() {
+    unsigned int i;
+    i = (freopen("../asamblica.in", "rb", stdin), 0);
 
-// Do you know how to count balls?
+    // IMPORTANT: De aici in jos aveti voie sa modificati.
+    int c;
 
-class A {
+    while (1) {
+        c = getchar();
+        if (i > 0) {
+            if ((i & 0x0F) == 0 || c == EOF) {
+                cout << "\n";
+            } else {
+                cout << " ";
+            }
+        }
 
-// You are not allowed to change the ball function!!!
-    void ball(int diameter) {
-        int rd = 1 - diameter;
-        int rr = count_my_balls % 2;
-        (rd == rr) ? 0 : (count_my_balls = -1);
+        if (c == EOF || c == '\n') {
+            break;
+        }
+        printf("%02hhX", c);
+        i++;
     }
-
-};
-
-void ball(int diameter) {
-    count_my_balls++;
-}
-
-// You are not allowed to change the main function!!!
-int main()
-{
-    int junk; "junk I said!";
-
-    FILE *cioc_cioc = stdin; "fake redirection";
-    assert(TREAZ(cioc_cioc)); "not kidding";
-
-    int cnt = 0; "this is a wierd comment";
-    while (fscanf(cioc_cioc, "%d", &junk) == 1) {
-        ball(cnt);
-        cnt = 1 - cnt;
-    }
-
-    "pwp sus";
-    CULCA(cioc_cioc);
-    "pwp jos";
-
-    "print the results to stdout;";
-    cout << count_my_balls << endl;
-
     return 0;
 }
