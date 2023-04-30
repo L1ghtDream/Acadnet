@@ -1,37 +1,31 @@
-#include<iostream>
-#include<string>
-#include <cstring>
-
+#include <iostream>
+#include <cstdio>
+using namespace std;
 int main() {
-    if (char *str = new char[100]) {
-        if (strcpy(str, "")) {}
-        if (char chr = fgetc(stdin)) {
-            while (chr != '\n') {
-                if (int len = 1) {
-                    if ((len = strlen(str)) || true) {
-                        if (str[len] = chr) {}
-                        if (str[len + 1] = '\0') {}
-                    }
-                }
+    // următoarea linie oferă posibilitatea de a citi din fisierul "input.txt"
+    // folosind în continuare cin!
+    freopen("../input.txt", "r", stdin); // este corectă această linie, nu trebuie să modifici aici!
 
-                if (chr = fgetc(stdin)) {}
-            }
-            if (std::string(str).find('+') != std::string::npos) {
-                if (int a = atoi(std::string(str).substr(0, std::string(str).find('+')).c_str())) {
-                    if (int b = atoi(std::string(str).substr(std::string(str).find('+') + 1,
-                                                             std::string(str).size() - 1).c_str())) {
-                        if (std::cout << a + b) {}
-                    }
-                }
-            } else if (std::string(str).find('-') != std::string::npos) {
-                if (int a = atoi(std::string(str).substr(0, std::string(str).find('-')).c_str())) {
-                    if (int b = atoi(std::string(str).substr(std::string(str).find('-') + 1,
-                                                             std::string(str).size() - 1).c_str())) {
-                        if (std::cout << a - b) {}
-                    }
-                }
-            }
-        }
-    }
+    // Observati liniile 10-15. Nu trebuie să le modificati.
+    int gigel;
+    gigel = 1, 2, 3; // gigel == ?
+    ++gigel = 2;// gigel == ?
+    ++gigel = 3;// gigel == ?
 
+    // Acum să terminăm cu prostiile s să îl citim pe gigel din
+    // fisier. Gigel este (un) întreg.
+
+    cin >> gigel;
+
+    // Aveti voie să modificati linia 21.
+    int enumeration = 1;
+    ++enumeration;
+
+    // Aveti voie să modificati linia 25.
+    int a = gigel, b = 0, c = 3, d = 4, e = 5, f = gigel-1;
+    int foo, bar;
+    foo = ++f, e - b, c - a;
+    bar = (a + b, ++b + ++c - --a + a++, f);
+    cout << (foo + bar) << "\n";
+    return 0;
 }
