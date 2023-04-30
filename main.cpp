@@ -1,26 +1,31 @@
 #include <iostream>
 #include <cstdio>
-#include <cstring>
-#include <cstdlib>
 
-bool is_prime(unsigned long long x) {
-    if (x == 2) return true;
-    for (long long i = 2; i * i <= x; i++)
-        if (x % i == 0)
-            return false;
-    return true;
-}
+using namespace std;
+
+int fibbo(int n);
 
 int main() {
-    unsigned long long n, count = 0, sum = 0;
-    char citire[100];
-    gets(citire);
-    n = atoi(citire);
-    for (int i = 2; i < n; i++) {
-        if (is_prime(i)){
-            count++;
-            sum += i;
-        }
+    // următoarea linie oferă posibilitatea de a citi din fisierul "input.txt"
+    // folosind în continuare cin!
+    freopen("../input.txt", "r", stdin); // este corectă această linie, nu trebuie să modifici aici!
+    int n;
+    cin >> n;
+    cout << fibbo(n) << "\n";
+    return 0;
+}
+
+int fibbo(int n) {
+    if (n == 1) return 1;
+    if (n == 2) return 2;
+    int a = 1; //fibbo[1]
+    int b = 2; //fibbo[2]
+
+    for (int i = 3; i <= n; ++i) {
+        int lastA = a;
+        int lastB = b;
+        a = b;
+        b = lastA+lastB;
     }
-    std::cout << sum << " " << count << std::endl;
+    return b;
 }
