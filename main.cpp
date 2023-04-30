@@ -1,19 +1,37 @@
-#include <iostream>
+#include<iostream>
+#include<string>
+#include <cstring>
 
-using namespace std;
+int main() {
+    if (char *str = new char[100]) {
+        if (strcpy(str, "")) {}
+        if (char chr = fgetc(stdin)) {
+            while (chr != '\n') {
+                if (int len = 1) {
+                    if ((len = strlen(str)) || true) {
+                        if (str[len] = chr) {}
+                        if (str[len + 1] = '\0') {}
+                    }
+                }
 
-// IMPORTANT: Singurele linii care pot fi schimbate sunt cele care incep
-// cu #define.
-#define SIGNBITONLY(x)	((x) >> (sizeof((x)) * 8 - 1))
-#define ABS(x)		(((x) + SIGNBITONLY(x)) ^ SIGNBITONLY(x))
-#define MINMAXOP(x, y, OP) ((x + y OP ABS(x - y)) / 2)
-#define MIN(x, y)	MINMAXOP(x, y, -)
-#define MAX(x, y)	MINMAXOP(x, y, +)
+                if (chr = fgetc(stdin)) {}
+            }
+            if (std::string(str).find('+') != std::string::npos) {
+                if (int a = atoi(std::string(str).substr(0, std::string(str).find('+')).c_str())) {
+                    if (int b = atoi(std::string(str).substr(std::string(str).find('+') + 1,
+                                                             std::string(str).size() - 1).c_str())) {
+                        if (std::cout << a + b) {}
+                    }
+                }
+            } else if (std::string(str).find('-') != std::string::npos) {
+                if (int a = atoi(std::string(str).substr(0, std::string(str).find('-')).c_str())) {
+                    if (int b = atoi(std::string(str).substr(std::string(str).find('-') + 1,
+                                                             std::string(str).size() - 1).c_str())) {
+                        if (std::cout << a - b) {}
+                    }
+                }
+            }
+        }
+    }
 
-int main()
-{
-    int a, b, c;
-    cin >> a >> b >> c;
-    cout << MIN(a, MIN(b, c)) << ' ' << MAX(MAX(a, b), c) << '\n';
-    return 0;
 }
