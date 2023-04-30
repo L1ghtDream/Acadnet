@@ -1,57 +1,77 @@
-#include <cstdlib>
-#include <fstream>
 #include <iostream>
-#include <vector>
-#include <algorithm>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sstream>
+#include <bits/stdc++.h>
 
-#define INPUT_FILENAME "../input.txt"
-#define OUTPUT_FILENAME "../output.txt"
+#define EXIT_CONVERTER {cout << "Invalid IPv4 address" << endl; \
+                        exit(EXIT_FAILURE);}
+
 using namespace std;
 
+
+int convert_string_to_int(string str) {
+    int x;
+    stringstream geek(str);
+    geek >> x;
+    return x;
+}
+
+
+string transform_in_binary(int octet_value) {
+
+    string octet_binary;
+
+    for (int digit = 7; digit >= 0; digit--) {
+        octet_binary.push_back(octet_value & (1 << digit) ? '1' : '0');
+    }
+
+    reverse(octet_binary.begin(), octet_binary.end());
+
+    return octet_binary;
+}
+
+string foo(string ipv4_dec) {
+
+    string ipv4_bin;
+    size_t pos;
+    unsigned int count = 4;
+    unsigned int octet_int;
+
+    pos = ipv4_dec.find('.');
+    while (count) {
+
+        octet_int = convert_string_to_int(ipv4_dec.substr(0, pos));
+
+        ipv4_dec = ipv4_dec.substr(pos + 1, ipv4_dec.length());
+
+        string tmp = transform_in_binary(octet_int);
+
+        reverse(tmp.begin(), tmp.end());
+
+        ipv4_bin += tmp;
+
+        if (count != 1)
+            ipv4_bin.push_back('.');
+
+        pos = ipv4_dec.find('.');
+
+        count--;
+    }
+
+    return ipv4_bin;
+}
+
 int main() {
-    vector<vector<int>> matrix;
-    ifstream inputFile;
-    ofstream outputFile;
-    inputFile.open(INPUT_FILENAME);
-    if (!inputFile.good()) {
-        cout << "Failed to open" << INPUT_FILENAME << endl;
-        exit(-1);
-    }
-    int size;
-    inputFile >> size;
-    for (int i = 0; i < size; i++) {
-        vector<int> tmp;
-        for (int j = 0; j < size; j++) {
-            int x;
-            inputFile >> x;
-            tmp.push_back(x);
-        }
-        matrix.push_back(tmp);
-    }
 
-    for (int i = 0; i < size; i++) {
-        sort(matrix[i].begin(), matrix[i].end());
+    string ipv4_dec, ipv4_bin;
 
-        if((i+1) % 2 == 1){
-            reverse(matrix[i].begin(), matrix[i].end());
-        }
-    }
+    cin >> ipv4_dec;
 
-    inputFile.close();
+    ipv4_bin = foo(ipv4_dec);
 
-    outputFile.open(OUTPUT_FILENAME);
-    if (!outputFile.good()) {
-        cout << "Failed to open" << OUTPUT_FILENAME << endl;
-        exit(-1);
-    }
+    cout << ipv4_bin << endl;
 
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            outputFile << matrix[i][j] << " ";
-        }
-        outputFile << endl;
-    }
-
-    outputFile.close();
     return 0;
 }
