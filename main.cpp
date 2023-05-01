@@ -1,139 +1,160 @@
 /*
     Acadnet 2017 - Etapa Interjudeteana
-    Problema B - WordStat
+    Problema C - Jedi
 */
 
-#include <iostream>
 #include <fstream>
-#include <stdio.h>
-#include <string.h>
-#include <vector>
-#include <utility>
-#include <algorithm>
-
-#define SPACE '_'
-#define VOWELS "aeiuo"
-#define CONSONANTS "qwrtypsdfghjklzxcvbnm"
+#include <iostream>
+#include <map>
+#include <string>
 
 using namespace std;
 
+class Person {
+public:
 
-bool myPairOperator(pair<char, int> a, pair<char, int> b) {
-    if (b.second > a.second) {
-        return false;
-    } else if (b.second == a.second) {
-        return (a.first > b.first);
-    } else
-        return true;
+    enum Gender {
+        MALE,
+        FEMALE
+    };
+
+    explicit Person(Gender t_gender, string t_name, int t_age);
+
+    virtual void do_work() = 0;
+
+    string m_name;
+protected:
+    Gender m_gender;
+    int m_age;
+};
+
+Person::Person(Person::Gender t_gender, string t_name, int t_age):m_gender(t_gender), m_name(t_name), m_age(t_age) {}
+
+class Profesor : public Person {
+public:
+
+    Profesor(Person::Gender t_gender, string t_name, int t_age);
+
+    void add_student(Person* t_student);
+
+    void do_work();
+    void remove_student(Person* t_student);
+
+private:
+    map<string, Person*> m_students;
+};
+
+Profesor::Profesor(Person::Gender t_gender, string t_name, int t_age): Person(t_gender, t_name, t_age) {}
+
+void Profesor::add_student(Person* t_student)
+{
+    m_students[t_student->m_name] = t_student;
+
+    cout << this->m_name << " takes on " << t_student->m_name << " as a student.\n";
 }
 
+void Profesor::remove_student(Person* t_student)
+{
+    m_students.erase(t_student->m_name);
 
-int isLetter(char letter) {
-    if ((65 <= letter && letter <= 92) ||
-        (97 <= letter && letter <= 122))
-        return 1;
-    return 0;
+    cout << t_student->m_name << " is no longer a student of " << this->m_name << ".\n";
 }
 
-int isVowel(char letter) {
-    int it;
-    for (it = 0; it < strlen(VOWELS); it++) {
-        if (VOWELS[it] == letter)
-            return 1;
+void Profesor::do_work()
+{
+    if (m_students.size() == 0)
+    {
+        cout << this->m_name << " has no students to teach.\n";
+        return;
     }
-    return 0;
-}
+    cout << this->m_name << " is teaching his student";
+    if (m_students.size() > 1)
+        cout << 's';
 
-int isConsonant(char letter) {
-    int it;
-    for (it = 0; it < strlen(CONSONANTS); it++) {
-        if (CONSONANTS[it] == letter)
-            return 1;
+    bool first = true;
+    for (map<string, Person*>::iterator it = m_students.begin(); it != m_students.end(); ++it)
+    {
+        if (first)
+        {
+            cout << ' ' << it->first;
+            first = false;
+        }
+        else
+            cout << ", " << it->first;
     }
-    return 0;
+    cout << ".\n";
 }
 
-int main(int argc, char **argv) {
-    int returnValue = 0;
-    FILE *datafp = NULL;
-    unsigned int lettersNumber = 0;
-    unsigned int vowelsNumber = 0;
-    unsigned int consonantNumber = 0;
-    char buffer[25];
-    int appearances[256];
-    //char cit = 0;
-    unsigned int it = 0;
-    vector<pair<char, int> > myVowels;
-    vector<pair<char, int> > myConsonants;
+class Student : public Person {
+public:
 
-    do {
-        datafp = fopen("../input.txt", "r");
-        if (datafp == NULL) {
-            returnValue = 1;
-            break;
-        }
+    Student(Person::Gender t_gender, string t_name, int t_age, Profesor* t_profesor);
+    ~Student();
 
-        fscanf(datafp, "%ud", &lettersNumber);
-        fscanf(datafp, "%ud", &vowelsNumber);
-        fscanf(datafp, "%ud", &consonantNumber);
+    void do_work();
 
-        cout << lettersNumber << endl;
-        cout << vowelsNumber << endl;
-        cout << consonantNumber << endl;
+private:
+    Profesor* m_profesor;
+};
 
-        for (it = 0; it < 256; it++) {
-            appearances[it] = 0;
-        }
+Student::Student(Person::Gender t_gender, string t_name, int t_age, Profesor* t_profesor): Person(t_gender, t_name, t_age)
+{
+    m_profesor=t_profesor;
+    m_profesor->add_student(this);
+}
 
-        while (!feof(datafp)) {
-            if (fgets(buffer, 25, datafp) == NULL) {
-                if (feof(datafp))
-                    break;
-                returnValue = 1;
-                break;
-            }
-            //cout<<buffer<<" -> "<<strlen(buffer)<<endl;
+Student::~Student()
+{
+    m_profesor->remove_student(this);
+}
 
-            if ((strlen(buffer) - 1) == lettersNumber) {
-                for (int cit = 0; cit < strlen(buffer); cit++) {
-                    //if (buffer[cit] >= 95)
-                    //    appearances[buffer[cit] - SPACE]++;
-                    //else
-                        appearances[buffer[cit]]++;
-                }
-            }
-        }
-        if (returnValue != 0)
-            break;
+void Student::do_work()
+{
+    cout << this->m_name << " is learning by ";
+    if (m_gender == Person::MALE)
+        cout << "himself";
+    else
+        cout << "herself";
+    cout << ".\n";
+}
 
-        for (int cit = 0; cit < 256; cit++) {
-            if (isLetter(cit) == 1) {
-                //if (cit >= 95)
-                //    continue;
-                if (isVowel(cit) == 1) {
-                    myVowels.push_back(make_pair(cit, appearances[cit]));
-                } else if(isConsonant(cit) == 1) {
-                    myConsonants.push_back(make_pair(cit, appearances[cit]));
-                }
-            }
-        }
+int main(int argc, char **argv)
+{
+    int flag;
 
+    ifstream params;
+    params.open("../params.txt");
+    if(!params.good()) {
+        cerr << "Failed to open params.txt file.\n";
+        return -1;
+    }
 
-        sort(myVowels.begin(), myVowels.end(), myPairOperator);
-        sort(myConsonants.begin(), myConsonants.end(), myPairOperator);
+    params >> flag;
 
-        for (int cit = 0; cit < vowelsNumber ; cit++) {
-            cout << myVowels[cit].first << " ";
-        }
-        cout<<endl;
-        // cout<< myVowels[cit].first << endl;
-        for (int cit = 0; cit < consonantNumber; cit++) {
-            cout << myConsonants[cit].first << " ";
-        }
-        // cout << myConsonants[cit].first << endl;
-    } while (0);
+    Profesor yoda(Person::MALE, "Yoda", 900);
+    if (flag % 2 == 0)
+        yoda.do_work();
 
-    if (datafp != NULL)
-        fclose(datafp);
-    return returnValue;
+    Profesor obi(Person::MALE, "Obi-Wan Kenobi", 60);
+    yoda.add_student(&obi);
+    Profesor luke(Person::MALE, "Luke Skywalker", 40);
+    yoda.add_student(&luke);
+    if (flag % 3 == 0)
+        yoda.do_work();
+
+    yoda.remove_student(&obi);
+    if (flag % 5 == 0)
+        yoda.do_work();
+
+    obi.add_student(&luke);
+
+    Student rei (Person::FEMALE, "Rei", 20, &luke);
+    if (flag % 7 == 0)
+        rei.do_work();
+    if (flag % 11 == 0)
+        luke.do_work();
+
+    params.close();
+
+    return 0;
 }
