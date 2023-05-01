@@ -1,51 +1,103 @@
 /*
 	Acadnet 2017 - Etapa Judeteana
-	Problema A
+	Problema B
 */
 
 #include <stdio.h>
-#include <limits.h>
-#include <vector>
-
+#include <stdlib.h>
+#include <math.h>
+#include <iostream>
 using namespace std;
 
-int compute_min(const vector<int> &v)
-{
-    int min = INT_MAX, i;
+#define N 100
+#define MAXLEN 50
 
-    for(i = 0; i < v.size(); i++)
-        if (min > v[i])
-            min = v[i];
+#define MIN_GRADE 1
+#define MAX_GRADE 10
 
-    return min;
+struct {
+    int values[N];
+    int next_index;
+} grades;
+
+struct {
+    int grade_distribution[MAX_GRADE - MIN_GRADE + 2];
+    double average;
+    double mean_squared_error;
+} stats;
+
+void read_input() {
+    FILE *fin = fopen("../input.txt", "r");
+    if (fin == NULL) {
+        fprintf(stderr, "Failed to open input file.\n");
+        exit(-1);
+    }
+
+    char first_name[MAXLEN], last_name[MAXLEN], email[MAXLEN], phone[MAXLEN], grade[MAXLEN];
+    int grade_value;
+
+    while (fscanf(fin, "%s%s%s%s%s", first_name, last_name, email, phone, grade) != EOF) {
+        grade_value = atoi(grade);
+        grades.values[grades.next_index++] = grade_value;
+    }
+    fclose(fin);
 }
 
-int count_3min(const vector<int> &v, int min)
-{
-    int cnt = 0, i;
+void compute_average() {
+    double sum = 0;
+    int i;
 
-    for(i = 0; i < v.size(); i++)
-        if (3 * min > v[i])
-            cnt++;
+    for (i = 1; i < grades.next_index; i++)
+        sum += grades.values[i];
 
-    return cnt;
+    stats.average = sum / (grades.next_index -1);
 }
 
-int main()
-{
-    vector<int> v;
-    int min, n, i, cnt;
+void compute_mean_squared_error() {
+    int i;
+    double sum = 0;
 
-    scanf("%d", &n);
-    v.resize(n, 0);
+    for (i = 1; i < grades.next_index; i++) {
+        double dif = grades.values[i] - stats.average;
+        sum += dif * dif;
+    }
+    stats.mean_squared_error = sqrt((double) sum / (grades.next_index - 2));
 
-    for (i = 0; i < n; i++)
-        scanf("%d", &v[i]);
+}
 
-    min = compute_min(v);
-    printf("%d ", min);
-    cnt = count_3min(v, min);
-    printf("%d\n", cnt);
+void compute_grade_distribution() {
+    int i;
 
-    return 0;
+    for (i = 1; i < grades.next_index; i++)
+        stats.grade_distribution[grades.values[i]]++;
+}
+
+void compute_statistics() {
+    compute_average();
+    compute_mean_squared_error();
+    compute_grade_distribution();
+}
+
+void write_output() {
+    int i;
+    FILE *fout = fopen("../output.txt", "w");
+    if (fout == NULL) {
+        fprintf(stderr, "Failed to open output file.\n");
+        exit(-1);
+    }
+
+    fprintf(fout, "%lf %lf\n", stats.average, stats.mean_squared_error);
+    for (i = MIN_GRADE; i <= MAX_GRADE; i++)
+        fprintf(fout, "%d ", stats.grade_distribution[i]);
+    fclose(fout);
+}
+
+int main() {
+    int ret = 0;
+
+    read_input();
+    compute_statistics();
+    write_output();
+
+    return ret;
 }

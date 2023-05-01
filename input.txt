@@ -1,0 +1,6 @@
+Name Prenume Email Telefon Nota
+CARTER ANDRE andre.andrea@cs.pub.ro 0736472485 7
+PHILLIPS ANDREA andrea.andreas@cs.pub.ro 0676684797 9
+EVANS ANDREAS andreas.andres@cs.pub.ro 0915396649 9
+TURNER ANDRES andres.andrew@cs.pub.ro 0152973370 10
+TORRES ANDREW andrew.andy@cs.pub.ro 0888730850 10
